@@ -1,0 +1,22 @@
+# Node / Next
+FrontEnd/node_modules/
+FrontEnd/.next/
+FrontEnd/out/
+
+# Spring / Java
+BackEnd/assinatura/target/
+BackEnd/assinatura/.mvn/
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Ambiente
+.env
+.env.local
