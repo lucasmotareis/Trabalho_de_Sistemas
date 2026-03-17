@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "signatures")
@@ -33,6 +35,9 @@ public class Signature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "public_id", nullable = false, unique = true, updatable = false, length = 36)
+    private String publicId;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "user_id",
@@ -42,14 +47,14 @@ public class Signature {
     private User user;
 
     @Lob
-    @Column(name = "original_text", nullable = false)
+    @Column(name = "original_text", nullable = false, columnDefinition = "TEXT")
     private String originalText;
 
     @Column(name = "text_hash", nullable = false, length = 512)
     private String textHash;
 
     @Lob
-    @Column(name = "signature_base64", nullable = false)
+    @Column(name = "signature_base64", nullable = false, columnDefinition = "TEXT")
     private String signatureBase64;
 
     @Column(name = "hash_algorithm", nullable = false, length = 100)
@@ -63,4 +68,11 @@ public class Signature {
 
     @OneToMany(mappedBy = "signature")
     private List<VerificationLog> verificationLogs = new ArrayList<>();
+
+    @PrePersist
+    public void assignPublicIdIfMissing() {
+        if (publicId == null || publicId.isBlank()) {
+            publicId = UUID.randomUUID().toString();
+        }
+    }
 }

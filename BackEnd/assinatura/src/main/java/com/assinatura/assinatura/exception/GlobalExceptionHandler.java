@@ -21,4 +21,18 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Unauthorized");
         return problemDetail;
     }
+
+    @ExceptionHandler(MissingUserKeyException.class)
+    public ProblemDetail handleMissingUserKey(MissingUserKeyException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problemDetail.setTitle("Missing user key");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(SignatureNotFoundException.class)
+    public ProblemDetail handleSignatureNotFound(SignatureNotFoundException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setTitle("Signature not found");
+        return problemDetail;
+    }
 }

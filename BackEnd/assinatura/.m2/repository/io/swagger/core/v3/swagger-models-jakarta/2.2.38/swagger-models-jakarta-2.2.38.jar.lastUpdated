@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Mon Mar 16 18:46:22 GMT-03:00 2026
+@default-spring-snapshots-https\://repo.spring.io/snapshot/.lastUpdated=1773697567916
+https\://repo.maven.apache.org/maven2/.lastUpdated=1773697582115
+https\://repo.spring.io/snapshot/.error=Could not transfer artifact io.swagger.core.v3\:swagger-models-jakarta\:jar\:2.2.38 from/to spring-snapshots (https\://repo.spring.io/snapshot)\: Permission denied\: getsockopt

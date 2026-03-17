@@ -1,0 +1,15 @@
+export const API_ENDPOINTS = {
+  auth: {
+    signup: "/auth/signup",
+    login: "/auth/login",
+    logout: "/auth/logout",
+    me: "/auth/me",
+  },
+  sign: {
+    signText: "/sign",
+  },
+  verify: {
+    byPublicId: (publicId: string) => `/verify/${publicId}`,
+    manual: "/verify",
+  },
+};

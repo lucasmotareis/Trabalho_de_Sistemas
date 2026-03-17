@@ -34,6 +34,8 @@ import java.util.List;
 public class AuthController {
 
     private static final String AUTHENTICATED_EMAIL_SESSION_KEY = "AUTHENTICATED_EMAIL";
+    private final HttpSessionSecurityContextRepository securityContextRepository =
+            new HttpSessionSecurityContextRepository();
 
     private final SignupService signupService;
     private final SessionAuthService sessionAuthService;
@@ -66,6 +68,7 @@ public class AuthController {
 
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+        securityContextRepository.saveContext(securityContext, httpRequest, httpResponse);
         session.setAttribute(AUTHENTICATED_EMAIL_SESSION_KEY, user.getEmail());
         sessionAuthService.registerAuthenticatedSession(session.getId(), user.getEmail());
         httpResponse.addCookie(new Cookie("JSESSIONID", session.getId()));

@@ -39,11 +39,11 @@ public class VerificationLog {
     private Signature signature;
 
     @Lob
-    @Column(name = "provided_text")
+    @Column(name = "provided_text", columnDefinition = "TEXT")
     private String providedText;
 
     @Lob
-    @Column(name = "provided_signature_base64")
+    @Column(name = "provided_signature_base64", columnDefinition = "TEXT")
     private String providedSignatureBase64;
 
     @Column(name = "valid", nullable = false)
