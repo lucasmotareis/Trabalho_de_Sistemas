@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/assinatura}
+    username: ${SPRING_DATASOURCE_USERNAME:assinatura_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  crypto:
+    master-key: ${APP_CRYPTO_MASTER_KEY:RbhY31QjCRrrWi4bk3Musrz18Y9HYEqqIWJXy5wmpxE=}
