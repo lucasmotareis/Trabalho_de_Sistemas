@@ -1,11 +1,10 @@
 # Node / Next
-FrontEnd/node_modules/
-FrontEnd/.next/
-FrontEnd/out/
+FrontEnd/assinatura_front/node_modules/
+FrontEnd/assinatura_front/.next/
+FrontEnd/assinatura_front/out/
 
 # Spring / Java
 BackEnd/assinatura/target/
-BackEnd/assinatura/.mvn/
 *.class
 
 # IDE

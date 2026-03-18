@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: assinatura
+      POSTGRES_USER: assinatura_user
+      POSTGRES_PASSWORD: assinatura_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./BackEnd/assinatura
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/assinatura
+      SPRING_DATASOURCE_USERNAME: assinatura_user
+      SPRING_DATASOURCE_PASSWORD: assinatura_pass
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      APP_CRYPTO_MASTER_KEY: ${APP_CRYPTO_MASTER_KEY:-RbhY31QjCRrrWi4bk3Musrz18Y9HYEqqIWJXy5wmpxE=}
+
+  frontend:
+    build:
+      context: ./FrontEnd/assinatura_front
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://trabsistemaback.pmto8bpm.com.br
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: https://trabsistemaback.pmto8bpm.com.br
+
+volumes:
+  postgres_data:
