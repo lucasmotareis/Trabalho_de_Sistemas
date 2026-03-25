@@ -30,6 +30,11 @@ public class VerificationLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "verified_by_user_id")
+    private User verifiedByUser;
+    
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "signature_id",

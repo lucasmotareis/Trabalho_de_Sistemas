@@ -2,6 +2,7 @@ package com.assinatura.assinatura.service;
 
 import com.assinatura.assinatura.domain.entity.User;
 import com.assinatura.assinatura.domain.entity.UserKey;
+import com.assinatura.assinatura.domain.entity.UserRole;
 import com.assinatura.assinatura.dto.SignupRequest;
 import com.assinatura.assinatura.dto.SignupResponse;
 import com.assinatura.assinatura.exception.DuplicateEmailException;
@@ -52,6 +53,7 @@ public class SignupService {
         user.setNome(request.nome().trim());
         user.setEmail(normalizedEmail);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setRole(UserRole.ROLE_USER);
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
 

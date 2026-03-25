@@ -1,6 +1,7 @@
 package com.assinatura.assinatura.service;
 
 import com.assinatura.assinatura.domain.entity.Signature;
+import com.assinatura.assinatura.domain.entity.User;
 import com.assinatura.assinatura.domain.entity.UserKey;
 import com.assinatura.assinatura.domain.entity.VerificationLog;
 import com.assinatura.assinatura.dto.VerifyRequest;
@@ -9,6 +10,7 @@ import com.assinatura.assinatura.exception.MissingUserKeyException;
 import com.assinatura.assinatura.exception.SignatureNotFoundException;
 import com.assinatura.assinatura.repository.SignatureRepository;
 import com.assinatura.assinatura.repository.UserKeyRepository;
+import com.assinatura.assinatura.repository.UserRepository;
 import com.assinatura.assinatura.repository.VerificationLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Locale;
 
 @Service
 public class VerificationService {
@@ -27,17 +30,20 @@ public class VerificationService {
     private final SignatureRepository signatureRepository;
     private final UserKeyRepository userKeyRepository;
     private final VerificationLogRepository verificationLogRepository;
+    private final UserRepository userRepository;
 
     public VerificationService(SignatureRepository signatureRepository,
                                UserKeyRepository userKeyRepository,
-                               VerificationLogRepository verificationLogRepository) {
+                               VerificationLogRepository verificationLogRepository,
+                               UserRepository userRepository) {
         this.signatureRepository = signatureRepository;
         this.userKeyRepository = userKeyRepository;
         this.verificationLogRepository = verificationLogRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
-    public VerificationResponse verifyByPublicId(String publicId) {
+    public VerificationResponse verifyByPublicId(String publicId, String authenticatedEmail) {
         Signature signature = signatureRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new SignatureNotFoundException(publicId));
         UserKey userKey = userKeyRepository.findByUserId(signature.getUser().getId())
@@ -48,6 +54,7 @@ public class VerificationService {
 
         VerificationLog verificationLog = new VerificationLog();
         verificationLog.setSignature(signature);
+        verificationLog.setVerifiedByUser(resolveVerifierUser(authenticatedEmail));
         verificationLog.setProvidedText(signature.getOriginalText());
         verificationLog.setProvidedSignatureBase64(signature.getSignatureBase64());
         verificationLog.setValid(valid);
@@ -67,7 +74,7 @@ public class VerificationService {
     }
 
     @Transactional
-    public VerificationResponse verifyManual(VerifyRequest request) {
+    public VerificationResponse verifyManual(VerifyRequest request, String authenticatedEmail) {
         Signature signature = signatureRepository.findByPublicId(request.publicId())
                 .orElseThrow(() -> new SignatureNotFoundException(request.publicId()));
         UserKey userKey = userKeyRepository.findByUserId(signature.getUser().getId())
@@ -78,6 +85,7 @@ public class VerificationService {
 
         VerificationLog verificationLog = new VerificationLog();
         verificationLog.setSignature(signature);
+        verificationLog.setVerifiedByUser(resolveVerifierUser(authenticatedEmail));
         verificationLog.setProvidedText(request.text());
         verificationLog.setProvidedSignatureBase64(request.signatureBase64());
         verificationLog.setValid(valid);
@@ -94,6 +102,14 @@ public class VerificationService {
                 signature.getCreatedAt(),
                 message
         );
+    }
+
+    private User resolveVerifierUser(String authenticatedEmail) {
+        if (authenticatedEmail == null || authenticatedEmail.isBlank()) {
+            return null;
+        }
+        String normalizedEmail = authenticatedEmail.trim().toLowerCase(Locale.ROOT);
+        return userRepository.findByEmail(normalizedEmail).orElse(null);
     }
 
     private boolean verifySignature(String text, String signatureBase64, String signatureAlgorithm, String publicKeyBase64) {

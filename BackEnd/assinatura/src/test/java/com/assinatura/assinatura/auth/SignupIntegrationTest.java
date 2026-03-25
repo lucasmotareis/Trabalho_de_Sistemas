@@ -86,6 +86,24 @@ class SignupIntegrationTest {
     }
 
     @Test
+    void shouldPersistDefaultRoleUserOnSignup() throws Exception {
+        String email = uniqueEmail();
+
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupPayload("Lucas", email, "Senha@123")))
+                .andExpect(status().isCreated());
+
+        String role = jdbcTemplate.queryForObject(
+                "SELECT role FROM users WHERE email = ?",
+                String.class,
+                email
+        );
+
+        assertThat(role).isEqualTo("ROLE_USER");
+    }
+
+    @Test
     void shouldCreateAUserKeyLinkedToTheCreatedUser() throws Exception {
         String email = uniqueEmail();
 

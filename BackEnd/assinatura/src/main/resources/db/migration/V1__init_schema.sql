@@ -44,3 +44,14 @@ CREATE TABLE verification_logs (
     verified_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT fk_verification_logs_signature FOREIGN KEY (signature_id) REFERENCES signatures (id)
 );
+
+ALTER TABLE verification_logs
+    ADD COLUMN verified_by_user_id BIGINT NULL;
+
+ALTER TABLE verification_logs
+    ADD CONSTRAINT fk_verification_logs_verified_by_user
+        FOREIGN KEY (verified_by_user_id)
+            REFERENCES users(id);
+
+CREATE INDEX idx_verification_logs_verified_by_user_id
+    ON verification_logs(verified_by_user_id);

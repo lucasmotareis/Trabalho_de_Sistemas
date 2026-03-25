@@ -1,46 +1,43 @@
 package com.assinatura.assinatura.controller;
 
-import com.assinatura.assinatura.dto.VerifyRequest;
-import com.assinatura.assinatura.dto.VerificationResponse;
-import com.assinatura.assinatura.service.VerificationService;
+import com.assinatura.assinatura.dto.AdminVerificationLogResponse;
+import com.assinatura.assinatura.exception.InvalidCredentialsException;
+import com.assinatura.assinatura.service.VerificationLogQueryService;
 import com.assinatura.assinatura.service.auth.SessionAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/verify")
-public class VerificationController {
+public class AdminVerificationLogController {
 
     private static final String AUTHENTICATED_EMAIL_SESSION_KEY = "AUTHENTICATED_EMAIL";
 
-    private final VerificationService verificationService;
+    private final VerificationLogQueryService verificationLogQueryService;
     private final SessionAuthService sessionAuthService;
 
-    public VerificationController(VerificationService verificationService,
-                                  SessionAuthService sessionAuthService) {
-        this.verificationService = verificationService;
+    public AdminVerificationLogController(VerificationLogQueryService verificationLogQueryService,
+                                          SessionAuthService sessionAuthService) {
+        this.verificationLogQueryService = verificationLogQueryService;
         this.sessionAuthService = sessionAuthService;
     }
 
-    @GetMapping("/{publicId}")
-    public ResponseEntity<VerificationResponse> verifyByPublicId(@PathVariable("publicId") String publicId,
-                                                                 HttpServletRequest request) {
-        return ResponseEntity.ok(verificationService.verifyByPublicId(publicId, resolveAuthenticatedEmail(request)));
-    }
-
-    @PostMapping
-    public ResponseEntity<VerificationResponse> verifyManual(@Valid @RequestBody VerifyRequest request,
-                                                             HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(verificationService.verifyManual(request, resolveAuthenticatedEmail(httpRequest)));
+    @GetMapping("/verification-logs")
+    public ResponseEntity<List<AdminVerificationLogResponse>> listAllVerificationLogs(HttpServletRequest request) {
+        String authenticatedEmail = resolveAuthenticatedEmail(request);
+        if (authenticatedEmail == null || authenticatedEmail.isBlank()) {
+            throw new InvalidCredentialsException();
+        }
+        if (!sessionAuthService.isAdmin(authenticatedEmail)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(verificationLogQueryService.listAllVerificationLogs());
     }
 
     private String resolveAuthenticatedEmail(HttpServletRequest request) {
