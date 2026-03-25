@@ -16,4 +16,8 @@ export const API_ENDPOINTS = {
     public: "/keys/public",
     me: "/keys/me",
   },
+  verificationLogs: {
+    me: "/me/verification-logs",
+    all: "/verification-logs",
+  },
 };
