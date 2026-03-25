@@ -19,6 +19,7 @@ const drawerWidth = 240;
 
 const navItems = [
   { href: "/sign", label: "Assinar texto" },
+  { href: "/keys/me", label: "Minhas chaves" },
   { href: "/dashboard/verify", label: "Verificar assinatura" },
 ];
 

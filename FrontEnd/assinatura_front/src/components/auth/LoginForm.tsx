@@ -104,6 +104,12 @@ export default function LoginForm() {
               Verificar assinatura
             </Link>
           </Typography>
+          <Typography variant="body2" color="text.secondary" textAlign="center">
+            Chaves públicas:{" "}
+            <Link component={NextLink} href="/keys/public" underline="hover">
+              Listar chaves
+            </Link>
+          </Typography>
         </Stack>
       </Box>
     </AuthCardShell>

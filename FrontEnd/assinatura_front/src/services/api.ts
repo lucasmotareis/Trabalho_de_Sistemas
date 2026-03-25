@@ -12,4 +12,8 @@ export const API_ENDPOINTS = {
     byPublicId: (publicId: string) => `/verify/${publicId}`,
     manual: "/verify",
   },
+  keys: {
+    public: "/keys/public",
+    me: "/keys/me",
+  },
 };
